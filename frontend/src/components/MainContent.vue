@@ -2,7 +2,7 @@
   <div class="main-content">
     <div class="content-body">
       <ChatContent v-if="activeActivity === 'chat'" />
-      <SearchContent v-if="activeActivity === 'search'" />
+      <SearchContent v-if="activeActivity === 'search'" @switchTab="handleSwitchTab" />
       <DocsContent v-if="activeActivity === 'docs'" />
       <SettingsContent v-if="activeActivity === 'settings'" />
     </div>
@@ -27,6 +27,12 @@ export default {
     activeActivity: {
       type: String,
       default: 'chat'
+    }
+  },
+  methods: {
+    handleSwitchTab(tab) {
+      // 发出事件通知父组件切换标签
+      this.$emit('switchTab', tab)
     }
   }
 }

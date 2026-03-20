@@ -1,32 +1,110 @@
 <template>
   <div class="chat-content">
-    <div class="chat-messages">
-      <div class="message user-message">
-        <div class="message-avatar">用户</div>
-        <div class="message-content">你好，如何使用知识图谱平台？</div>
+    <div class="chat-messages" ref="messagesContainer">
+      <div v-if="conversationsLoading" class="loading">
+        <i class="el-icon-loading"></i> 加载中...
       </div>
-      <div class="message bot-message">
+      <div v-else-if="conversationMessages.length === 0" class="empty-messages">
+        <el-empty description="开始新的对话吧" />
+      </div>
+      <div
+        v-for="message in conversationMessages"
+        :key="message.id"
+        :class="['message', message.role === 'user' ? 'user-message' : 'bot-message']"
+      >
+        <div class="message-avatar">{{ message.role === 'user' ? '用户' : 'AI' }}</div>
+        <div class="message-content">{{ message.content }}</div>
+      </div>
+      <div v-if="isSending" class="message bot-message">
         <div class="message-avatar">AI</div>
-        <div class="message-content">
-          知识图谱平台是一个用于管理和查询知识的系统，您可以通过问答功能获取信息，通过搜索功能查找文档，通过文档库管理上传的文档。
+        <div class="message-content sending">
+          <i class="el-icon-loading"></i>
+          正在回复...
         </div>
       </div>
     </div>
     <div class="chat-input">
       <el-input
+        v-model="inputMessage"
         type="textarea"
         placeholder="输入你的问题..."
         :rows="3"
+        @keyup.enter.exact="handleSendMessage"
       >
       </el-input>
-      <el-button type="primary" class="send-button">发送</el-button>
+      <el-button
+        type="primary"
+        class="send-button"
+        @click="handleSendMessage"
+        :loading="isSending"
+        :disabled="!inputMessage.trim()"
+      >
+        发送
+      </el-button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'ChatContent'
+  name: 'ChatContent',
+  data() {
+    return {
+      inputMessage: '',
+      isSending: false
+    }
+  },
+  computed: {
+    conversationMessages() {
+      return this.$store.getters.conversationMessages
+    },
+    currentConversation() {
+      return this.$store.getters.currentConversation
+    },
+    conversationsLoading() {
+      return this.$store.getters.conversationsLoading
+    }
+  },
+  watch: {
+    conversationMessages() {
+      this.scrollToBottom()
+    }
+  },
+  mounted() {
+    // 如果没有当前对话，创建一个新对话
+    if (!this.currentConversation) {
+      this.$store.dispatch('createConversation', '新对话')
+    }
+  },
+  methods: {
+    async handleSendMessage() {
+      if (!this.inputMessage.trim() || this.isSending) return
+      
+      const content = this.inputMessage.trim()
+      this.inputMessage = ''
+      this.isSending = true
+      
+      try {
+        await this.$store.dispatch('sendMessage', {
+          conversationId: this.currentConversation.id,
+          content
+        })
+      } catch (error) {
+        console.error('发送消息失败:', error)
+        this.$message.error('发送消息失败，请重试')
+      } finally {
+        this.isSending = false
+      }
+    },
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const container = this.$refs.messagesContainer
+        if (container) {
+          container.scrollTop = container.scrollHeight
+        }
+      })
+    }
+  }
 }
 </script>
 
@@ -45,6 +123,21 @@ export default {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #409EFF;
+}
+
+.empty-messages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .message {
@@ -75,6 +168,7 @@ export default {
   margin: 0 10px;
   font-size: 14px;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .user-message .message-avatar {
@@ -91,6 +185,12 @@ export default {
 .user-message .message-content {
   background-color: #409EFF;
   color: #fff;
+}
+
+.message-content.sending {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .chat-input {

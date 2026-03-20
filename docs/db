@@ -1,0 +1,144 @@
+-- 创建数据库（如果不存在）
+CREATE DATABASE IF NOT EXISTS `knowledge_db` 
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_general_ci;
+
+USE `knowledge_db`;
+
+-- =====================================================
+-- 表1：文档分类树（支持多级树形结构）
+-- =====================================================
+DROP TABLE IF EXISTS `document_category`;
+CREATE TABLE `document_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL COMMENT '分类名称',
+  `parent_id` int(11) NOT NULL DEFAULT '0' COMMENT '父级ID，0表示根节点',
+  `sort_order` int(11) NOT NULL DEFAULT '0' COMMENT '排序序号',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_parent_id` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文档分类树';
+
+-- =====================================================
+-- 表2：文档表
+-- =====================================================
+DROP TABLE IF EXISTS `document`;
+CREATE TABLE `document` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) NOT NULL COMMENT '文档标题',
+  `content` longtext NOT NULL COMMENT '文档内容（纯文本）',
+  `category_id` int(11) NOT NULL DEFAULT '0' COMMENT '所属分类ID，0表示未分类',
+  `file_path` varchar(500) DEFAULT NULL COMMENT '原始文件存储路径',
+  `uploader` varchar(50) DEFAULT NULL COMMENT '上传人',
+  `views` int(11) NOT NULL DEFAULT '0' COMMENT '浏览次数',
+  `likes` int(11) NOT NULL DEFAULT '0' COMMENT '点赞数',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0正常 1已删除',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_category_id` (`category_id`),
+  KEY `idx_status` (`status`),
+  FULLTEXT KEY `ft_title_content` (`title`,`content`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文档表';
+
+-- =====================================================
+-- 表3：对话会话表
+-- =====================================================
+DROP TABLE IF EXISTS `conversation`;
+CREATE TABLE `conversation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) DEFAULT NULL COMMENT '会话标题',
+  `user_id` varchar(50) DEFAULT NULL COMMENT '用户标识',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='对话会话表';
+
+-- =====================================================
+-- 表4：对话消息表
+-- =====================================================
+DROP TABLE IF EXISTS `conversation_message`;
+CREATE TABLE `conversation_message` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `conversation_id` int(11) NOT NULL COMMENT '所属会话ID',
+  `role` varchar(10) NOT NULL COMMENT 'user 或 assistant',
+  `content` longtext NOT NULL COMMENT '消息内容',
+  `sources` text DEFAULT NULL COMMENT '答案来源文档ID列表（JSON格式）',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_conversation_id` (`conversation_id`),
+  KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='对话消息表';
+
+-- =====================================================
+-- 表5：搜索日志表（可选）
+-- =====================================================
+DROP TABLE IF EXISTS `search_log`;
+CREATE TABLE `search_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `keyword` varchar(200) NOT NULL COMMENT '搜索关键词',
+  `result_count` int(11) NOT NULL DEFAULT '0' COMMENT '搜索结果数量',
+  `user_id` varchar(50) DEFAULT NULL COMMENT '用户标识',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_keyword` (`keyword`),
+  KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='搜索日志表';
+
+-- =====================================================
+-- 插入示例数据（虚拟数据）
+-- =====================================================
+
+-- 1. 插入文档分类树（根节点）
+INSERT INTO `document_category` (`id`, `name`, `parent_id`, `sort_order`) VALUES
+(1, '技术文档', 0, 1),
+(2, '业务文档', 0, 2);
+
+-- 技术文档子类
+INSERT INTO `document_category` (`name`, `parent_id`, `sort_order`) VALUES
+('前端开发', 1, 1),
+('后端开发', 1, 2),
+('数据库', 1, 3),
+('运维', 1, 4);
+
+-- 业务文档子类
+INSERT INTO `document_category` (`name`, `parent_id`, `sort_order`) VALUES
+('产品需求', 2, 1),
+('用户手册', 2, 2),
+('培训资料', 2, 3);
+
+-- 2. 插入文档（实际内容可自行补充）
+INSERT INTO `document` (`title`, `content`, `category_id`, `uploader`, `views`, `likes`) VALUES
+('Vue2 组件开发指南', 'Vue2 组件开发指南：介绍组件生命周期、Props、Events、插槽等基本概念，以及组件复用最佳实践。', 3, '张三', 120, 5),
+('Spring Boot 2 快速入门', 'Spring Boot 2 快速入门：使用 Spring Initializr 创建项目，配置 application.yml，编写第一个 REST 接口。', 4, '李四', 200, 12),
+('MySQL 5.7 索引优化', 'MySQL 5.7 索引优化：覆盖索引、最左前缀原则、索引下推等高级特性，及 explain 分析。', 5, '王五', 80, 3),
+('热轧带钢边裂分析', '热轧带钢边裂分析：边裂主要由终轧温度过低、冷却不均、化学成分波动等原因引起。建议提高终轧温度 10-20℃，检查冷却水分布。', 1, '赵六', 50, 2),
+('产品需求模板', '产品需求模板：包含项目背景、目标用户、功能列表、非功能需求等章节。', 6, '张三', 30, 1),
+('RAG技术介绍', 'RAG（检索增强生成）是一种将信息检索与大语言模型生成能力相结合的技术框架，能有效缓解模型幻觉，提高答案准确性。', 1, '钱七', 90, 8);
+
+-- 3. 插入对话会话
+INSERT INTO `conversation` (`title`, `user_id`) VALUES
+('关于RAG架构的咨询', 'user001'),
+('边裂处理咨询', 'user001');
+
+-- 4. 插入对话消息（多轮）
+-- 会话1：关于RAG架构
+INSERT INTO `conversation_message` (`conversation_id`, `role`, `content`, `sources`) VALUES
+(1, 'user', '什么是RAG？', NULL),
+(1, 'assistant', 'RAG（检索增强生成）是一种将信息检索与大语言模型生成能力相结合的技术框架。简单来说，系统会在回答你的问题之前，先从知识库中“查阅资料”，再根据查到的内容进行总结和回答，让答案更准确、更有依据。', '[6]'),
+(1, 'user', 'RAG有哪些优点？', NULL),
+(1, 'assistant', 'RAG的主要优点包括：1. 知识时效性强，可实时更新知识库；2. 可解释性强，答案有来源；3. 缓解大模型幻觉问题。', '[6]');
+
+-- 会话2：边裂处理
+INSERT INTO `conversation_message` (`conversation_id`, `role`, `content`, `sources`) VALUES
+(2, 'user', '热轧带钢边裂怎么处理？', NULL),
+(2, 'assistant', '边裂通常由终轧温度过低引起，建议将终轧温度提高10-20℃，同时检查冷却水分布是否均匀。另外，需确保板坯加热均匀，避免局部过热。', '[4]'),
+(2, 'user', '边裂和终轧温度的关系是怎样的？', NULL),
+(2, 'assistant', '终轧温度过低会导致钢材塑性下降，在轧制过程中容易产生裂纹。适当提高终轧温度可以改善金属流动性，减少边裂缺陷。但温度过高也可能导致氧化铁皮增多，需平衡控制。', '[4]');
+
+-- 5. 插入搜索日志
+INSERT INTO `search_log` (`keyword`, `result_count`, `user_id`) VALUES
+('RAG', 3, 'user001'),
+('边裂', 2, 'user001'),
+('Spring Boot', 1, 'user002');

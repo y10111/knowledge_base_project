@@ -58,6 +58,9 @@ export default {
     selectSidebarItem(activity, item) {
       this.activeActivity = activity;
       this.selectedSidebarItem = item;
+    },
+    handleMenuChange(menu) {
+      this.$store.commit('SET_SETTINGS_MENU', menu);
     }
   }
 }

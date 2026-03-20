@@ -1,19 +1,39 @@
 <template>
-  <div class="sidebar-content">
+  <div class="docs-sidebar">
     <div class="sidebar-header">
-      <h3>文档库</h3>
-      <el-button size="small" type="primary" plain>
-        <i class="el-icon-upload"></i> 上传文档
+      <h3>文档</h3>
+      <el-button type="primary" size="small" @click="handleCreateDocument">
+        <i class="el-icon-plus"></i> 新建
       </el-button>
     </div>
-    <div class="sidebar-body">
+    <div class="tree-section">
+      <div v-if="localLoading" class="loading">
+        <i class="el-icon-loading"></i> 加载中...
+      </div>
+      <div v-else-if="localTreeData.length === 0" class="empty-list">
+        <el-empty description="暂无文档" />
+      </div>
       <el-tree
-        :data="docTree"
+        v-else
+        ref="tree"
+        :data="localTreeData"
+        :props="treeProps"
         node-key="id"
-        default-expand-all
-        class="doc-tree"
-        @node-click="(data) => $emit('item-click', 'docs', data)"
+        :expand-on-click-node="false"
+        :default-expanded-keys="expandedKeys"
+        :highlight-current="false"
+        @node-expand="handleNodeExpand"
+        @node-collapse="handleNodeCollapse"
+        @node-click="handleNodeClick"
+        class="document-tree"
       >
+        <template #default="{ node, data }">
+          <span class="tree-node" :class="{ 'is-document': data.type === 'document', 'is-category': data.type === 'category', 'active': data.type === 'document' && selectedDocId === data.id }">
+            <i v-if="data.type === 'category'" class="el-icon-folder"></i>
+            <i v-else class="el-icon-document"></i>
+            <span class="node-label">{{ data.name }}</span>
+          </span>
+        </template>
       </el-tree>
     </div>
   </div>
@@ -24,57 +44,164 @@ export default {
   name: 'DocsSidebar',
   data() {
     return {
-      docTree: [
-        {
-          id: 1,
-          label: '技术文档',
-          children: [
-            { id: 2, label: '前端开发' },
-            { id: 3, label: '后端开发' },
-            { id: 4, label: '数据库' }
-          ]
-        },
-        {
-          id: 5,
-          label: '业务文档',
-          children: [
-            { id: 6, label: '产品需求' },
-            { id: 7, label: '用户手册' }
-          ]
+      treeProps: {
+        children: 'children',
+        label: 'name'
+      },
+      localTreeData: [],
+      expandedKeys: [],
+      selectedDocId: null,
+      localLoading: false,
+      initialized: false
+    }
+  },
+  computed: {
+    treeData() {
+      return this.$store.getters.documentTree
+    }
+  },
+  watch: {
+    treeData: {
+      handler(newVal) {
+        if (JSON.stringify(newVal) !== JSON.stringify(this.localTreeData)) {
+          this.localTreeData = JSON.parse(JSON.stringify(newVal))
         }
-      ]
+      },
+      immediate: true
+    }
+  },
+  async mounted() {
+    this.localLoading = true
+    await Promise.all([
+      this.$store.dispatch('fetchCategories'),
+      this.$store.dispatch('fetchDocuments', { page: 1, size: 100 })
+    ])
+    this.localLoading = false
+    this.initialized = true
+  },
+  methods: {
+    handleCreateDocument() {
+      this.$message.info('创建文档功能开发中')
+    },
+    handleNodeExpand(data) {
+      if (!this.expandedKeys.includes(data.id)) {
+        this.expandedKeys.push(data.id)
+      }
+    },
+    handleNodeCollapse(data) {
+      const index = this.expandedKeys.indexOf(data.id)
+      if (index > -1) {
+        this.expandedKeys.splice(index, 1)
+      }
+    },
+    async handleNodeClick(data) {
+      if (data.type === 'document') {
+        this.selectedDocId = data.id
+        try {
+          await this.$store.dispatch('fetchDocument', data.id)
+          this.$emit('item-click', 'docs', data)
+        } catch (error) {
+          console.error('加载文档失败:', error)
+          this.$message.error('加载文档失败，请重试')
+        }
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-.sidebar-content {
+.docs-sidebar {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  overflow: hidden;
+  background-color: #f5f7fa;
+  border-right: 1px solid #e4e7ed;
 }
 
 .sidebar-header {
-  padding: 0 15px;
-  height: 60px;
-  border-bottom: 1px solid #e4e7ed;
+  padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fafafa;
-  flex-shrink: 0;
-  box-sizing: border-box;
+  border-bottom: 1px solid #e4e7ed;
 }
 
-.sidebar-body {
+.sidebar-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #303133;
+}
+
+.tree-section {
   flex: 1;
-  padding: 15px;
+  padding: 10px;
   overflow-y: auto;
 }
 
-.doc-tree {
-  height: 100%;
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #409EFF;
+}
+
+.empty-list {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.document-tree {
+  background: transparent;
+}
+
+.document-tree >>> .el-tree-node__content {
+  padding: 4px 0;
+  height: 32px;
+  transition: all 0.3s;
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.node-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tree-node i.el-icon-folder {
+  color: #E6A23C;
+  font-size: 16px;
+}
+
+.tree-node i.el-icon-document {
+  color: #409EFF;
+  font-size: 16px;
+}
+
+.is-document {
+  cursor: pointer;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.is-document:hover {
+    background-color: #ecf5ff;
+}
+
+.is-document.active {
+  border-left: 3px solid #409EFF;
+    background-color: #ecf5ff;
 }
 </style>
