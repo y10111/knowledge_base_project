@@ -6,21 +6,21 @@
 
       
       <!-- 侧边栏（内部可滚动） -->
-      <Sidebar :active-activity="activeActivity" @item-click="selectSidebarItem" />
+      <Sidebar :active-activity="activeActivity" @item-click="selectSidebarItem" @menu-change="handleMenuChange" />
       
       <!-- 核心区域（内部可滚动） -->
       <div class="main-content-container">
-        <div v-if="!selectedSidebarItem" class="markdown-content">
-          <markdown-viewer :src="'/docs/init.md'" />
-        </div>
-        <MainContent v-else :active-activity="activeActivity" />
+        <MainContent :active-activity="activeActivity" :selected-sidebar-item="selectedSidebarItem" />
       </div>
     </div>
+    
+    <!-- 欢迎弹窗 -->
+    <WelcomeDialog />
   </div>
 </template>
 
 <script>
-import MarkdownViewer from './components/MarkdownViewer.vue'
+import WelcomeDialog from './components/WelcomeDialog.vue'
 import ActivityBar from './components/ActivityBar.vue'
 import Sidebar from './components/Sidebar.vue'
 import MainContent from './components/MainContent.vue'
@@ -28,7 +28,7 @@ import MainContent from './components/MainContent.vue'
 export default {
   name: 'App',
   components: {
-    MarkdownViewer,
+    WelcomeDialog,
     ActivityBar,
     Sidebar,
     MainContent
@@ -53,7 +53,7 @@ export default {
   methods: {
     handleActivityChange(id) {
       this.activeActivity = id;
-      this.selectedSidebarItem = null; // 点击活动栏时重置侧边栏选择
+      this.selectedSidebarItem = null;
     },
     selectSidebarItem(activity, item) {
       this.activeActivity = activity;
@@ -67,29 +67,6 @@ export default {
 </script>
 
 <style>
-/* 新增Markdown内容样式 */
-.markdown-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.markdown-content .markdown-viewer {
-  overflow-y: auto;
-  /* 隐藏滚动条 */
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.markdown-content .markdown-viewer::-webkit-scrollbar {
-  display: none;
-}
-
 /* 全局固定：html, body, #app 禁止滚动 */
 html, body {
   height: 100%;
@@ -103,49 +80,24 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  height: 100vh;          /* 与 100% 等效 */
+  height: 100vh;
   overflow: hidden;
 }
 
 /* 主布局容器：flex 行排列，占满视口 */
 .vscode-layout {
   display: flex;
-  height: 100vh;          /* 撑满视口 */
+  height: 100vh;
   background-color: #f5f7fa;
 }
-
-
 
 /* 核心区域容器 */
 .main-content-container {
-  flex: 1;                    /* 占据剩余全部宽度 */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;           /* 防止主区域溢出 */
+  overflow: hidden;
   padding: 20px;
   background-color: #f5f7fa;
-}
-
-/* Markdown内容容器 */
-.markdown-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.markdown-content .markdown-viewer {
-  overflow-y: auto;
-  /* 隐藏滚动条 */
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.markdown-content .markdown-viewer::-webkit-scrollbar {
-  display: none;
 }
 </style>

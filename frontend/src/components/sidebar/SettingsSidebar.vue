@@ -11,15 +11,23 @@
           @click="handleMenuClick('data-dictionary')"
         >
           <i class="el-icon-s-grid"></i>
-          <span>数据字典</span>
+          <span>文档分类管理</span>
         </div>
         <div 
           class="menu-item" 
           :class="{ 'active': activeMenu === 'data-management' }"
           @click="handleMenuClick('data-management')"
         >
-          <i class="el-icon-setting"></i>
-          <span>数据管理</span>
+          <i class="el-icon-s-data"></i>
+          <span>系统数据管理</span>
+        </div>
+        <div 
+          class="menu-item" 
+          :class="{ 'active': activeMenu === 'about' }"
+          @click="handleMenuClick('about')"
+        >
+          <i class="el-icon-info"></i>
+          <span>关于与帮助</span>
         </div>
       </div>
     </div>
@@ -38,6 +46,15 @@ export default {
     handleMenuClick(menu) {
       this.activeMenu = menu
       this.$emit('menu-change', menu)
+      this.$emit('item-click', 'settings', { id: menu, name: this.getMenuName(menu) })
+    },
+    getMenuName(menu) {
+      const menuNames = {
+        'data-dictionary': '文档分类管理',
+        'data-management': '系统数据管理',
+        'about': '关于与帮助'
+      }
+      return menuNames[menu] || menu
     }
   }
 }

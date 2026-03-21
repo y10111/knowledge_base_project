@@ -5,10 +5,12 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
+import * as api from './api/index.js'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$axios = axios
+Vue.prototype.$api = api
 
 new Vue({
   router,

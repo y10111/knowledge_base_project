@@ -78,7 +78,7 @@ export default {
 <style scoped>
 /* 主容器样式 */
 .markdown-viewer {
-  padding: 40px;
+  padding: 20px;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);

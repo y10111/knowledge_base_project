@@ -49,6 +49,12 @@ public class DocumentCategoryServiceImpl implements DocumentCategoryService {
 
     @Override
     public List<DocumentCategory> getCategoryTree() {
+        // 返回所有分类，让前端构建树形结构
+        return findAll();
+    }
+
+    // 旧方法保留用于其他用途
+    public List<DocumentCategory> getRootCategories() {
         List<DocumentCategory> allCategories = findAll();
         List<DocumentCategory> rootCategories = new ArrayList<>();
         for (DocumentCategory category : allCategories) {
