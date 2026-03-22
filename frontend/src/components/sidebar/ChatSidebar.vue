@@ -1,29 +1,26 @@
 <template>
-  <div class="chat-sidebar">
+  <div class="sidebar-content">
     <div class="sidebar-header">
       <h3>对话</h3>
       <el-button type="primary" size="small" @click="handleCreateConversation">
         <i class="el-icon-plus"></i> 新建
       </el-button>
     </div>
-    <div class="conversation-list">
+    <div class="sidebar-list">
       <div v-if="isLoading" class="loading">
         <i class="el-icon-loading"></i> 加载中...
       </div>
       <div v-else-if="conversationList.length === 0" class="empty-list">
         <el-empty description="暂无对话" />
-        <div style="padding: 10px; color: red; font-size: 12px; text-align: center;">
-          DEBUG: count={{ conversationList.length }}
-        </div>
       </div>
       <div
         v-for="conversation in conversationList"
         :key="conversation.id"
-        :class="['conversation-item', currentConversation?.id === conversation.id ? 'active' : '']"
+        :class="['sidebar-item', currentConversation?.id === conversation.id ? 'active' : '']"
         @click="handleSelectConversation(conversation)"
       >
-        <div class="conversation-title">{{ conversation.title || '无标题' }}</div>
-        <div class="conversation-actions">
+        <div class="sidebar-item-title">{{ conversation.title || '无标题' }}</div>
+        <div class="sidebar-item-actions">
           <el-button
             type="text"
             size="small"
@@ -147,86 +144,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.chat-sidebar {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f7fa;
-  border-right: 1px solid #e4e7ed;
-}
-
-.sidebar-header {
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e4e7ed;
-}
-
-.sidebar-header h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: #303133;
-}
-
-.conversation-list {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-}
-
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  color: #409EFF;
-}
-
-.empty-list {
-  padding: 40px 20px;
-  text-align: center;
-}
-
-.conversation-item {
-  padding: 15px;
-  margin-bottom: 10px;
-  background-color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.3s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.conversation-item:hover {
-  background-color: #ecf5ff;
-  transform: translateY(-1px);
-}
-
-.conversation-item.active {
-  background-color: #ecf5ff;
-  border-left: 3px solid #409EFF;
-}
-
-.conversation-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: #303133;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-right: 10px;
-}
-
-.conversation-actions {
-  display: flex;
-  gap: 5px;
-}
-</style>

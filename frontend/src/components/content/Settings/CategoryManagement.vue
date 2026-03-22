@@ -340,6 +340,7 @@ export default {
       }
     },
     handleDialogClose() {
+      this.dialogVisible = false
       this.categoryForm = {
         id: null,
         name: '',

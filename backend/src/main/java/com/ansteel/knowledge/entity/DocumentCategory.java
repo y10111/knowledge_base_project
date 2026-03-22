@@ -20,7 +20,7 @@ public class DocumentCategory {
     private Integer parentId;
 
     @Column(name = "sort_order")
-    private Integer sortOrder;
+    private Integer sortOrder = 0;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

@@ -71,22 +71,27 @@ export default {
     }
   },
   mounted() {
-    // 如果没有当前对话，创建一个新对话
-    if (!this.currentConversation) {
-      this.$store.dispatch('createConversation', '新对话')
-    }
+    // 不再自动创建或加载对话，等待用户操作
   },
   methods: {
     async handleSendMessage() {
       if (!this.inputMessage.trim() || this.isSending) return
-      
+
       const content = this.inputMessage.trim()
       this.inputMessage = ''
       this.isSending = true
-      
+
       try {
+        let conversationId = this.currentConversation?.id
+
+        // 如果没有当前对话，先创建一个新对话
+        if (!conversationId) {
+          const newConversation = await this.$store.dispatch('createConversation', '新对话')
+          conversationId = newConversation.id
+        }
+
         await this.$store.dispatch('sendMessage', {
-          conversationId: this.currentConversation.id,
+          conversationId: conversationId,
           content
         })
       } catch (error) {

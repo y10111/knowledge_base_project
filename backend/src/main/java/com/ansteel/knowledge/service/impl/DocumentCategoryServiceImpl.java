@@ -18,6 +18,10 @@ public class DocumentCategoryServiceImpl implements DocumentCategoryService {
 
     @Override
     public DocumentCategory save(DocumentCategory category) {
+        // 确保 sortOrder 有默认值
+        if (category.getSortOrder() == null) {
+            category.setSortOrder(0);
+        }
         return categoryRepository.save(category);
     }
 

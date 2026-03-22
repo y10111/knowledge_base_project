@@ -5,9 +5,9 @@
     width="500px"
     @close="handleClose"
   >
-    <el-form :model="form" :rules="rules" ref="categoryForm" label-width="100px">
+    <el-form :model="form" :rules="rules" ref="categoryForm" label-width="100px" @submit.native.prevent>
       <el-form-item label="分类名称" prop="name">
-        <el-input v-model="form.name" placeholder="请输入分类名称"></el-input>
+        <el-input v-model="form.name" placeholder="请输入分类名称" @keyup.enter.native="handleSave"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -59,7 +59,11 @@ export default {
   },
   methods: {
     handleClose() {
-      this.$refs.categoryForm.resetFields()
+      // 重置表单并关闭弹窗
+      if (this.$refs.categoryForm) {
+        this.$refs.categoryForm.resetFields()
+      }
+      this.dialogVisible = false
       this.$emit('close')
     },
     handleSave() {

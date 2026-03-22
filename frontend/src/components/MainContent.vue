@@ -1,10 +1,12 @@
 <template>
   <div class="main-content">
     <div v-if="selectedSidebarItem || activeActivity === 'chat'" class="content-body">
-      <ChatContent v-if="activeActivity === 'chat'" />
-      <SearchContent v-if="activeActivity === 'search'" @switchTab="handleSwitchTab" />
-      <DocsContent v-if="activeActivity === 'docs'" />
-      <SettingsContent v-if="activeActivity === 'settings'" />
+      <keep-alive>
+        <ChatContent v-if="activeActivity === 'chat'" />
+        <SearchContent v-else-if="activeActivity === 'search'" @switchTab="handleSwitchTab" />
+        <DocsContent v-else-if="activeActivity === 'docs'" />
+        <SettingsContent v-else-if="activeActivity === 'settings'" />
+      </keep-alive>
     </div>
     <div v-else class="empty-state">
       <div class="empty-content">
