@@ -65,11 +65,11 @@ public class ConversationController {
 
     @PostMapping("/{id}/messages")
         @Operation(summary = "发送消息")
-    public Result<ConversationMessage> sendMessage(
+    public Result<Map<String, Object>> sendMessage(
             @PathVariable Integer id,
             @RequestBody Map<String, String> body) {
         String content = body.get("content");
-        ConversationMessage message = conversationService.sendMessage(id, content);
-        return Result.success(message);
+        Map<String, Object> result = conversationService.sendMessage(id, content);
+        return Result.success(result);
     }
 }

@@ -5,6 +5,7 @@ import com.ansteel.knowledge.entity.ConversationMessage;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ConversationService {
 
@@ -18,5 +19,5 @@ public interface ConversationService {
 
     List<ConversationMessage> getMessages(Integer conversationId);
 
-    ConversationMessage sendMessage(Integer conversationId, String content);
+    Map<String, Object> sendMessage(Integer conversationId, String content);
 }

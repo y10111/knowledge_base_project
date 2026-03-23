@@ -148,9 +148,31 @@ export default new Vuex.Store({
 
     async sendMessage({ commit }, { conversationId, content }) {
       try {
+        // 1. 添加用户消息到本地状态
+        const userMessage = {
+          id: Date.now(),
+          conversationId: conversationId,
+          role: 'user',
+          content: content,
+          createdAt: new Date()
+        }
+        commit('ADD_MESSAGE', userMessage)
+
+        // 2. 发送请求到后端
         const response = await conversationApi.sendMessage(conversationId, content)
         if (response.code === 200 && response.data) {
-          commit('ADD_MESSAGE', response.data)
+          // 3. 添加 AI 消息到本地状态
+          const aiMessage = {
+            id: Date.now() + 1,
+            conversationId: conversationId,
+            role: 'assistant',
+            content: response.data.answer,
+            createdAt: new Date(),
+            sources: response.data.sources,
+            thoughtProcess: response.data.thought_process
+          }
+          commit('ADD_MESSAGE', aiMessage)
+
           return response.data
         }
       } catch (error) {

@@ -13,7 +13,21 @@
         :class="['message', message.role === 'user' ? 'user-message' : 'bot-message']"
       >
         <div class="message-avatar">{{ message.role === 'user' ? '用户' : 'AI' }}</div>
-        <div class="message-content">{{ message.content }}</div>
+        <div class="message-content">
+          {{ message.content }}
+          <!-- 显示 AI 消息的来源 -->
+          <div v-if="message.role === 'assistant' && message.sources && message.sources.length > 0" class="message-sources">
+            <el-divider content-position="left">参考资料</el-divider>
+            <el-tag v-for="(source, index) in message.sources" :key="index" size="small" type="info">
+              文档 ID: {{ source.doc_id }} ({{ Math.round(source.score * 100) }}%)
+            </el-tag>
+          </div>
+          <!-- 显示思考过程 -->
+          <div v-if="message.role === 'assistant' && message.thoughtProcess" class="message-thought">
+            <el-divider content-position="left">思考过程</el-divider>
+            <pre class="thought-content">{{ message.thoughtProcess }}</pre>
+          </div>
+        </div>
       </div>
       <div v-if="isSending" class="message bot-message">
         <div class="message-avatar">AI</div>
@@ -188,17 +202,39 @@ export default {
 }
 
 .user-message .message-content {
-  background-color: #409EFF;
-  color: #fff;
-}
+    background-color: #409EFF;
+    color: #fff;
+  }
 
-.message-content.sending {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+  .message-content.sending {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-.chat-input {
+  .message-sources {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .message-thought {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .thought-content {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    margin: 0;
+  }
+
+  .chat-input {
   padding: 20px;
   border-top: 1px solid #e4e7ed;
   background-color: #fafafa;
