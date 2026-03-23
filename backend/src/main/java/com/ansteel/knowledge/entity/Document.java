@@ -41,10 +41,22 @@ public class Document {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        if (views == null) {
+            views = 0;
+        }
+        if (likes == null) {
+            likes = 0;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+        if (views == null) {
+            views = 0;
+        }
+        if (likes == null) {
+            likes = 0;
+        }
     }
 }

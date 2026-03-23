@@ -63,6 +63,10 @@ export default new Vuex.Store({
       if (index !== -1) {
         state.documents.splice(index, 1, document)
       }
+      // 如果更新的是当前文档，也要更新currentDocument
+      if (state.currentDocument && state.currentDocument.id === document.id) {
+        state.currentDocument = document
+      }
     },
     REMOVE_DOCUMENT(state, documentId) {
       state.documents = state.documents.filter(d => d.id !== documentId)

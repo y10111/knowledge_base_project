@@ -2,7 +2,7 @@
   <div class="sidebar">
     <ChatSidebar v-if="activeActivity === 'chat'" @item-click="$emit('item-click', ...arguments)" />
     <SearchSidebar v-if="activeActivity === 'search'" @item-click="$emit('item-click', ...arguments)" />
-    <DocsSidebar v-if="activeActivity === 'docs'" @item-click="$emit('item-click', ...arguments)" />
+    <DocsSidebar v-if="activeActivity === 'docs'" @item-click="$emit('item-click', ...arguments)" @create-document="$emit('create-document')" />
     <SettingsSidebar v-if="activeActivity === 'settings'" @menu-change="$emit('menu-change', ...arguments)" @item-click="$emit('item-click', ...arguments)" />
   </div>
 </template>

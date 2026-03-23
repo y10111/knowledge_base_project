@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     handleCreateDocument() {
-      this.$message.info('创建文档功能开发中')
+      this.$emit('create-document')
     },
     handleNodeExpand(data) {
       if (!this.expandedKeys.includes(data.id)) {

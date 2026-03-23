@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/docs")
@@ -75,5 +78,18 @@ public class DocumentController {
     public Result<List<Document>> search(@RequestParam String keyword) {
         List<Document> documents = documentService.search(keyword);
         return Result.success(documents);
+    }
+
+    @GetMapping("/all")
+        @Operation(summary = "获取所有文档")
+    public List<Map<String, Object>> getAllDocuments() {
+        return documentService.findAll(1, 1000).getContent().stream()
+            .map(doc -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", doc.getId());
+                map.put("content", doc.getContent());
+                return map;
+            })
+            .collect(Collectors.toList());
     }
 }

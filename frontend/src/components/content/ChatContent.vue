@@ -16,10 +16,13 @@
         <div class="message-content">
           {{ message.content }}
           <!-- 显示 AI 消息的来源 -->
-          <div v-if="message.role === 'assistant' && message.sources && message.sources.length > 0" class="message-sources">
+          <div v-if="message.role === 'assistant' && getSources(message).length > 0" class="message-sources">
             <el-divider content-position="left">参考资料</el-divider>
-            <el-tag v-for="(source, index) in message.sources" :key="index" size="small" type="info">
-              文档 ID: {{ source.doc_id }} ({{ Math.round(source.score * 100) }}%)
+            <el-tag v-for="(source, index) in getSources(message)" :key="index" size="small" type="info" style="cursor: pointer;">
+              <a @click="navigateToDocument(source.doc_id)" style="color: #409EFF; text-decoration: none;">
+                {{ source.doc_name || '未知文档' }}
+              </a>
+              <span style="margin-left: 5px;">({{ Math.round(source.score * 100) }}%)</span>
             </el-tag>
           </div>
           <!-- 显示思考过程 -->
@@ -98,9 +101,11 @@ export default {
       try {
         let conversationId = this.currentConversation?.id
 
-        // 如果没有当前对话，先创建一个新对话
+        // 如果没有当前对话，先创建一个新对话，使用第一条消息作为标题
         if (!conversationId) {
-          const newConversation = await this.$store.dispatch('createConversation', '新对话')
+          // 截取消息前20个字符作为标题
+          const title = content.length > 20 ? content.substring(0, 20) + '...' : content
+          const newConversation = await this.$store.dispatch('createConversation', title)
           conversationId = newConversation.id
         }
 
@@ -122,6 +127,22 @@ export default {
           container.scrollTop = container.scrollHeight
         }
       })
+    },
+    getSources(message) {
+      if (!message.sources) return []
+      if (typeof message.sources === 'string') {
+        try {
+          return JSON.parse(message.sources)
+        } catch (e) {
+          console.error('Failed to parse sources:', e)
+          return []
+        }
+      }
+      return message.sources
+    },
+    navigateToDocument(docId) {
+      // 触发事件，通知父组件切换到文档活动并加载对应文档
+      this.$emit('navigate-to-document', docId)
     }
   }
 }

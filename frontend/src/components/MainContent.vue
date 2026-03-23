@@ -1,10 +1,10 @@
 <template>
   <div class="main-content">
-    <div v-if="selectedSidebarItem || activeActivity === 'chat'" class="content-body">
+    <div v-if="selectedSidebarItem || activeActivity === 'chat' || activeActivity === 'docs' || activeActivity === 'settings'" class="content-body">
       <keep-alive>
-        <ChatContent v-if="activeActivity === 'chat'" />
+        <ChatContent v-if="activeActivity === 'chat'" @navigate-to-document="handleNavigateToDocument" />
         <SearchContent v-else-if="activeActivity === 'search'" @switchTab="handleSwitchTab" />
-        <DocsContent v-else-if="activeActivity === 'docs'" />
+        <DocsContent v-else-if="activeActivity === 'docs'" ref="docsContent" />
         <SettingsContent v-else-if="activeActivity === 'settings'" />
       </keep-alive>
     </div>
@@ -44,6 +44,9 @@ export default {
   methods: {
     handleSwitchTab(tab) {
       this.$emit('switchTab', tab)
+    },
+    handleNavigateToDocument(docId) {
+      this.$emit('navigate-to-document', docId)
     }
   }
 }

@@ -25,6 +25,9 @@ public class ConversationMessage {
     @Column(columnDefinition = "TEXT")
     private String sources;
 
+    @Column(name = "thought_process", columnDefinition = "TEXT")
+    private String thoughtProcess;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

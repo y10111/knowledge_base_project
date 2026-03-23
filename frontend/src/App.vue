@@ -6,11 +6,11 @@
 
       
       <!-- 侧边栏（内部可滚动） -->
-      <Sidebar :active-activity="activeActivity" @item-click="selectSidebarItem" @menu-change="handleMenuChange" />
+      <Sidebar :active-activity="activeActivity" @item-click="selectSidebarItem" @menu-change="handleMenuChange" @create-document="handleCreateDocument" />
       
       <!-- 核心区域（内部可滚动） -->
       <div class="main-content-container">
-        <MainContent :active-activity="activeActivity" :selected-sidebar-item="selectedSidebarItem" />
+        <MainContent ref="mainContent" :active-activity="activeActivity" :selected-sidebar-item="selectedSidebarItem" @navigate-to-document="handleNavigateToDocument" />
       </div>
     </div>
     
@@ -61,6 +61,22 @@ export default {
     },
     handleMenuChange(menu) {
       this.$store.commit('SET_SETTINGS_MENU', menu);
+    },
+    handleCreateDocument() {
+      if (this.$refs.mainContent && this.$refs.mainContent.$refs.docsContent) {
+        this.$refs.mainContent.$refs.docsContent.handleCreateDocument();
+      }
+    },
+    handleNavigateToDocument(docId) {
+      // 切换到文档活动
+      this.activeActivity = 'docs';
+      this.selectedSidebarItem = null;
+      // 等待组件加载后，获取文档详情并显示
+      this.$nextTick(() => {
+        if (this.$refs.mainContent && this.$refs.mainContent.$refs.docsContent) {
+          this.$refs.mainContent.$refs.docsContent.loadDocument(docId);
+        }
+      });
     }
   }
 }
