@@ -25,6 +25,10 @@ from openpyxl import load_workbook
 
 app = Flask(__name__)
 
+# 导入CORS配置
+from config import setup_cors
+setup_cors(app)
+
 # =====================================================
 # 配置参数
 # =====================================================

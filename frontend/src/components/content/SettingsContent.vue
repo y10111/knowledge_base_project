@@ -3,18 +3,20 @@
     <CategoryManagement v-if="currentMenu === 'data-dictionary'" />
     <DataManagement v-else-if="currentMenu === 'data-management'" />
     <AboutContent v-else-if="currentMenu === 'about'" />
+    <HealthCheck v-else-if="currentMenu === 'health'" />
   </div>
 </template>
 
 <script>
-import { CategoryManagement, DataManagement, AboutContent } from './Settings'
+import { CategoryManagement, DataManagement, AboutContent, HealthCheck } from './Settings'
 
 export default {
   name: 'SettingsContent',
   components: {
     CategoryManagement,
     DataManagement,
-    AboutContent
+    AboutContent,
+    HealthCheck
   },
   data() {
     return {

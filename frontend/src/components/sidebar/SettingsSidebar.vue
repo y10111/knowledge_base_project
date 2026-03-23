@@ -29,6 +29,14 @@
           <i class="el-icon-info"></i>
           <span>关于与帮助</span>
         </div>
+        <div 
+          class="menu-item" 
+          :class="{ 'active': activeMenu === 'health' }"
+          @click="handleMenuClick('health')"
+        >
+          <i class="el-icon-connection"></i>
+          <span>健康检查</span>
+        </div>
       </div>
     </div>
   </div>
@@ -52,7 +60,8 @@ export default {
       const menuNames = {
         'data-dictionary': '文档分类管理',
         'data-management': '系统数据管理',
-        'about': '关于与帮助'
+        'about': '关于与帮助',
+        'health': '健康检查'
       }
       return menuNames[menu] || menu
     }
