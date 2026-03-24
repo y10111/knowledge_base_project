@@ -33,6 +33,7 @@
       :title="isEdit ? '编辑文档' : '新建文档'"
       :visible.sync="dialogVisible"
       width="800px"
+      :close-on-click-modal="false"
     >
       <el-form :model="documentForm" :rules="rules" ref="documentForm">
         <el-form-item label="标题" prop="title">
@@ -199,6 +200,7 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  /* padding: 20px; */
 }
 
 .loading {
@@ -217,7 +219,7 @@ export default {
 }
 
 .document-detail {
-  padding: 20px;
+  padding: 30px;
   overflow-y: auto;
   flex: 1;
 }

@@ -17,8 +17,8 @@
 
 | 方法 | 路径 | 功能 | 请求参数 | 返回 |
 |------|------|------|----------|------|
-| POST | `/api/conversations/{id}/messages` | 发送新消息（问答） | `{ "content": "用户问题" }` | `{ "role": "assistant", "content": "AI回答", "sources": [{"docId":1,"title":"..."}] }` |
-| POST | `/api/conversations/{id}/feedback` | 对答案反馈 | `{ "messageId": 123, "feedback": 1 }` (1有用，-1无用) | `{ "message": "ok" }` |
+| POST | `/api/conversations/{id}/messages` | 发送新消息（问答） | `{ "content": "用户问题" }` | `{ "role": "assistant", "content": "AI回答", "sources": [{
+ "docId":1,"title":"..." }] }` |
 
 ---
 
@@ -26,12 +26,14 @@
 
 | 方法 | 路径 | 功能 | 请求参数 | 返回 |
 |------|------|------|----------|------|
-| POST | `/api/docs/upload` | 上传文档 | multipart/form-data: `file`, `title`, `categoryId`（可选）, `uploader` | `{ "id":1, "title":"...", "categoryId":... }` |
-| GET | `/api/docs` | 获取文档列表 | `?page=1&size=10&categoryId=2&keyword=边裂` | `{ "total":100, "items": [ {...} ] }` |
+| POST | `/api/docs` | 创建文档 | `{ "title": "...", "content": "...", "categoryId": 1, "uploader": "..." }` | `{ "id":1, "title":"...", "categoryId":... }` |
+| GET | `/api/docs` | 获取文档列表 | `?page=1&size=10&categoryId=2` | `{ "total":100, "items": [ {...} ] }` |
 | GET | `/api/docs/{id}` | 获取文档详情 | 路径参数 `id` | `{ "id":1, "title":"...", "content":"...", "views":100 }` |
 | PUT | `/api/docs/{id}` | 更新文档 | `{ "title":"...", "categoryId":... }` | `{ "id":1, ... }` |
 | DELETE | `/api/docs/{id}` | 删除文档 | 路径参数 `id` | `{ "message": "ok" }` |
-| POST | `/api/docs/{id}/view` | 增加浏览次数 | 路径参数 `id` | `{ "views": 101 }` |
+| POST | `/api/docs/{id}/view` | 增加浏览次数 | 路径参数 `id` | `{ "message": "ok" }` |
+| GET | `/api/docs/search` | 搜索文档 | `?keyword=边裂` | `{ "data": [ {...} ] }` |
+| GET | `/api/docs/all` | 获取所有文档 | 无 | `[ { "id":1, "content":"..." } ]` |
 
 ---
 

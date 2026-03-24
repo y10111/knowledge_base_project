@@ -1,5 +1,5 @@
 ```bash
-cd /Users/yanghuaqiang/Desktop/python_rag_service
+cd /Users/yanghuaqiang/Desktop/knowledge_base_project/python_rag_service
 # 创建虚拟环境
 python -m venv venv
 # 激活虚拟环境

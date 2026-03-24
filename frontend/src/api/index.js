@@ -112,7 +112,7 @@ export const categoryApi = {
 export const searchApi = {
   // 搜索
   search: (keyword, type = 'all') => {
-    return apiClient.get('/search', { params: { keyword, type } })
+    return apiClient.get('/search', { params: { q: keyword, type } })
   }
 }
 

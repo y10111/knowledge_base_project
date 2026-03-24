@@ -2,12 +2,13 @@
   <div class="category-management">
     <div class="content-header">
       <h3>系统数据管理</h3>
-      <el-button type="primary" size="small" @click="handleAddRootCategory">
+      <el-button type="primary" @click="handleAddRootCategory">
         <i class="el-icon-plus"></i> 新建一级分类
       </el-button>
     </div>
-    <div class="category-tree">
+    <div class="content-body">
       <el-tree
+        v-if="categoryTreeData && categoryTreeData.length > 0"
         ref="categoryTree"
         :data="categoryTreeData"
         :props="treeProps"
@@ -65,6 +66,9 @@
           </span>
         </template>
       </el-tree>
+      <div v-else class="empty-content">
+        <el-empty description="暂无分类数据，点击上方按钮添加" />
+      </div>
     </div>
     <CategoryDialog
       :visible="dialogVisible"
@@ -358,24 +362,10 @@ export default {
   flex-direction: column;
 }
 
-.content-header {
-  padding: 20px;
-  border-bottom: 1px solid #e4e7ed;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-.content-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
-  color: #303133;
-}
 
-.category-tree {
+.content-body {
   flex: 1;
-  padding: 20px;
   overflow-y: auto;
 }
 
@@ -401,5 +391,13 @@ export default {
 
 .tree-node:hover .node-actions {
   opacity: 1;
+}
+
+.empty-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
 }
 </style>

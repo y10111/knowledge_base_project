@@ -35,7 +35,8 @@ public class SearchServiceImpl implements SearchService {
             result.put("docs", docs);
         }
         if ("conversation".equals(type) || "all".equals(type)) {
-            result.put("conversations", new ArrayList<>());
+            List<Conversation> conversations = conversationRepository.findByTitleContaining(keyword);
+            result.put("conversations", conversations);
         }
         return result;
     }

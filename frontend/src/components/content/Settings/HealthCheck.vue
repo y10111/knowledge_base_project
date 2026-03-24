@@ -1,12 +1,12 @@
 <template>
   <div class="health-check">
-    <div class="health-header">
+    <div class="content-header">
       <h3>系统健康检查</h3>
       <el-button type="primary" @click="checkHealth" :loading="loading">
         检查健康状态
       </el-button>
     </div>
-    <div class="health-content">
+    <div class="content-body">
       <el-card v-if="healthStatus" class="health-card">
         <template slot="header">
           <div class="health-card-header">
@@ -85,24 +85,13 @@ export default {
 <style scoped>
 .health-check {
   height: 100%;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.health-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  flex-direction: column;
 }
 
-.health-header h3 {
-  margin: 0;
-  color: #303133;
-}
-
-.health-content {
+.content-body {
   flex: 1;
+  overflow-y: auto;
 }
 
 .health-card {
@@ -127,6 +116,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 300px;
+  height: 100%;
+  min-height: 300px;
 }
 </style>

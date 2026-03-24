@@ -3,7 +3,7 @@
     <div class="content-header">
       <h3>系统数据管理</h3>
     </div>
-    <div class="management-actions">
+    <div class="content-body">
       <el-card class="action-card">
         <div class="action-item">
           <div class="action-icon">
@@ -136,24 +136,10 @@ export default {
   flex-direction: column;
 }
 
-.content-header {
-  padding: 20px;
-  border-bottom: 1px solid #e4e7ed;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-.content-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
-  color: #303133;
-}
 
-.management-actions {
+.content-body {
   flex: 1;
-  padding: 20px;
   overflow-y: auto;
 }
 

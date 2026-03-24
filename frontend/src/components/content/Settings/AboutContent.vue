@@ -14,9 +14,10 @@ export default {
 </script>
 
 <style scoped>
-/* markdown-viewer {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 50px;
-} */
+markdown-viewer {
+  height: 100%;
+  padding: 20px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
 </style>

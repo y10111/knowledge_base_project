@@ -58,6 +58,24 @@ export default {
     selectSidebarItem(activity, item) {
       this.activeActivity = activity;
       this.selectedSidebarItem = item;
+      
+      // 处理搜索结果的点击
+      if (activity === 'doc' || activity === 'conversation') {
+        // 保持在搜索页面，不跳转到文档页或对话页
+        this.activeActivity = 'search';
+        
+        // 等待组件加载后，获取详情并显示
+        this.$nextTick(() => {
+          if (this.$refs.mainContent && this.$refs.mainContent.$refs.searchContent) {
+            // 调用 SearchContent 组件的方法来显示详情
+            if (activity === 'doc') {
+              this.$refs.mainContent.$refs.searchContent.loadDocument(item.id);
+            } else if (activity === 'conversation') {
+              this.$refs.mainContent.$refs.searchContent.loadConversation(item.id);
+            }
+          }
+        });
+      }
     },
     handleMenuChange(menu) {
       this.$store.commit('SET_SETTINGS_MENU', menu);
